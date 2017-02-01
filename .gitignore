@@ -1,0 +1,5 @@
+/HumbleBundle/log
+/HumbleBundle/html
+/bin
+/.idea
+*.pyc
