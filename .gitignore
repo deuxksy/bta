@@ -1,5 +1,7 @@
 /HumbleBundle/log
 /HumbleBundle/html
-/bin
+/resources/*.ini
+/bin/*.cmd
+/bin/*.sh
 /.idea
 *.pyc
