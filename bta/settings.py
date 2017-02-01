@@ -13,7 +13,7 @@ import os
 import redis
 
 config = ConfigParser()
-config.read(os.environ['zzizily.bta.config'])
+config.read(os.environ['zzizily_bta_config'])
 pool = redis.ConnectionPool(
     host=config['db']['redis.host'],
     port=int(config['db']['redis.port']),
