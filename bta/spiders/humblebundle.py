@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 import scrapy
 import time
-from HumbleBundle.items import HumbleBundleItem
+from bta.items import BtaItem
 
 class HumbleBundleSpider(scrapy.Spider):
     name = 'humblebundlespider'
@@ -10,7 +11,7 @@ class HumbleBundleSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
-        yield HumbleBundleItem(
+        yield BtaItem(
             url=response.xpath('//meta[@property="og:url"]/@content').extract().pop(),
             title=response.xpath('//meta[@property="og:title"]/@content').extract().pop(),
             total_payments=response.xpath('//td[@class="st-td js-statistics-total-payments"]/text()').re('([G0-9.,]+)').pop().replace(',', ''),

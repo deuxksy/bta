@@ -4,10 +4,10 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-from HumbleBundle.settings import pool
+from bta.settings import pool
 import redis
 
-class HumblebundlePipeline(object):
+class BtaPipeline(object):
     def process_item(self, item, spider):
         r = redis.Redis(connection_pool=pool)
         url = item['url']
