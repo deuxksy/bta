@@ -1,2 +1,6 @@
 #!/usr/bin/env bash
-source /home/pi/apps/bta/bin/init.sh && /home/pi/apps/bta/bin/run.sh
+pyenv shell 3.5.3
+pyenv virtualenvwrapper
+workon bta
+ZZIZILY_BTA_CONFIG=/home/pi/apps/bta/resource/local_config.ini
+export ZZIZILY_BTA_CONFIG
