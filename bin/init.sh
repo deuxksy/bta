@@ -5,5 +5,5 @@ eval "$(pyenv virtualenv-init -)"
 source `which activate.sh`
 
 pyenv shell 3.5.3
-pyenv virtualenvwrapper_lazy
+pyenv virtualenvwrapper
 workon bta
