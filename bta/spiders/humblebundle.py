@@ -8,7 +8,8 @@ class HumbleBundleSpider(scrapy.Spider):
     allowed_domains = ["https://www.humblebundle.com"]
     start_urls = [
         'https://www.humblebundle.com',
-        'https://www.humblebundle.com/books'
+        'https://www.humblebundle.com/books',
+        'https://www.humblebundle.com/mobile',
     ]
 
     def parse(self, response):
