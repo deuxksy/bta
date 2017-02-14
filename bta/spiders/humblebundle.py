@@ -10,6 +10,7 @@ class HumbleBundleSpider(scrapy.Spider):
         'https://www.humblebundle.com',
         'https://www.humblebundle.com/books',
         'https://www.humblebundle.com/mobile',
+        'https://www.humblebundle.com/freedom',
     ]
 
     def parse(self, response):
