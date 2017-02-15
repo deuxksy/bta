@@ -13,7 +13,10 @@ class BtaPipeline(object):
         r = redis.Redis(connection_pool=pool)
         url = item['url']
         if url and url.split('//'):
-            key = ':'.join(url.split('//')[-1].split('/'))
+            if 2 == len(url.split('//')[-1].split('/')):
+                key = 'top:'.join(url.split('//')[-1].split('/'))
+            else:
+                key = ':'.join(url.split('//')[-1].split('/'))
         else:
             key = url
         r.lpush('bta_price:{}'.format(key), json.dumps(item))
