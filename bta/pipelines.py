@@ -8,6 +8,7 @@ from bta.settings import pool
 import redis
 import json
 
+
 class BtaPipeline(object):
     def process_item(self, item, spider):
         r = redis.Redis(connection_pool=pool)
@@ -19,5 +20,5 @@ class BtaPipeline(object):
                 key = ':'.join(url.split('//')[-1].split('/'))
         else:
             key = url
-        r.lpush('bta_price:{}'.format(key), item)
+        r.lpush('bta_price:{}'.format(key), item.toJSON())
         return item
