@@ -6,6 +6,7 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 from bta.settings import pool
 import redis
+import json
 
 class BtaPipeline(object):
     def process_item(self, item, spider):
@@ -15,5 +16,5 @@ class BtaPipeline(object):
             key = ':'.join(url.split('//')[-1].split('/'))
         else:
             key = url
-        r.lpush(key, item)
+        r.lpush('bta_price:{}'.format(key), json.dumps(item))
         return item
