@@ -12,7 +12,7 @@ class HumbleBundleSpider(scrapy.Spider):
         'https://www.humblebundle.com/mobile',
         'https://www.humblebundle.com/freedom',
         'https://www.humblebundle.com/star-wars-3-bundle',
-        'https://www.humblebundle.com/books/hacks-book-bundle',
+        'https://www.humblebundle.com/books/valiant-comics-book-bundle',
     ]
 
     def parse(self, response):
