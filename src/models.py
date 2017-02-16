@@ -1,3 +1,4 @@
+import json
 
 class BtaSite(object):
     site = None
@@ -25,6 +26,9 @@ class BtaPrice(object):
     purchases = None
     average = None
     time = None
+
+    def toJSON(self, sort_keys=True, indent=4, separators=(',', ':')):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=sort_keys, separators=separators)
 
 
 class BtaArchive(object):
