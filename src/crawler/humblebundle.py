@@ -1,7 +1,9 @@
-from settings import redis_pool
-from settings import config
+from setting import redis_pool
+from setting import config
 from models import BtaPrice
 from commons import log
+from commons import proxy
+from commons import util
 import requests
 import scrapy
 import threading
@@ -13,23 +15,24 @@ import os
 
 logger = log.get_logger(logger=logging.getLogger(os.path.basename(__file__).split('.')[0]), config=config)
 
-class HumbleBundleCrawler(object):
+class HumbleBundleCrawler(threading.Thread):
 
-    def __init__(self, key):
+    def __init__(self, key, *args, **kwargs):
         self.key = key
-        self.urls = []
         self.encoding = 'utf-8'
-        self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0'}
-        # threading.Thread.__init__(self)
-        self.init()
+        self.urls = []
+        threading.Thread.__init__(self)
+        self.init(*args, **kwargs)
 
-    def init (self):
+    def init (self, *args, **kwargs):
+        self.headers = util.get_user_agent()
         self.redis = redis.Redis(connection_pool=redis_pool)
         self.site = self.redis.hscan('bta_site:{}'.format(self.key))[1]
         self.url = self.site.get(b'url').decode(self.encoding)
+        self.proxies = proxy.get_proxies()
 
     def init_parse (self):
-        response = requests.get(self.url, headers=self.headers)
+        response = requests.get(self.url, headers=self.headers, proxies=self.proxies)
         html = scrapy.Selector(text=response.text)
         categories = html.xpath(self.site.get(b'xpath_category').decode(self.encoding)).extract()[0:-2]
         for category in categories:
@@ -40,7 +43,7 @@ class HumbleBundleCrawler(object):
 
     def parse (self, url):
         if url not in self.urls :
-            response = requests.get(url)
+            response = requests.get(url, headers=self.headers, proxies=self.proxies)
             html = scrapy.Selector(text=response.text)
 
             bta_price = BtaPrice()
@@ -69,6 +72,7 @@ class HumbleBundleCrawler(object):
                 key = ':'.join(key_split)
         else:
             key = url
+        logger.debug(bta_price.toJSON())
         self.redis.lpush('bta_price:{}'.format(key), bta_price.toJSON())
 
     def run(self):

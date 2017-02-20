@@ -4,3 +4,4 @@
 /resource/*.ini
 *.pyc
 .env
+sh.exe.stackdump
