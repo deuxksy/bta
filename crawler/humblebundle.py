@@ -17,15 +17,15 @@ logger = log.get_logger(logger=logging.getLogger(os.path.basename(__file__).spli
 
 class HumbleBundleCrawler(threading.Thread):
 
-    def __init__(self, key, *args, **kwargs):
+    def __init__(self, key):
         self.key = key
         self.encoding = 'utf-8'
         self.urls = []
         threading.Thread.__init__(self)
-        self.init(*args, **kwargs)
+        self.init()
 
-    def init (self, *args, **kwargs):
-        self.headers = util.get_user_agent()
+    def init (self):
+        self.headers = {'User-Agent': util.get_user_agent()}
         self.redis = redis.Redis(connection_pool=redis_pool)
         self.site = self.redis.hscan('bta_site:{}'.format(self.key))[1]
         self.url = self.site.get(b'url').decode(self.encoding)
@@ -72,7 +72,6 @@ class HumbleBundleCrawler(threading.Thread):
                 key = ':'.join(key_split)
         else:
             key = url
-        logger.debug(bta_price.toJSON())
         self.redis.lpush('bta_price:{}'.format(key), bta_price.toJSON())
 
     def run(self):
