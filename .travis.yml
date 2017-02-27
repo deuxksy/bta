@@ -1,0 +1,23 @@
+language: python
+
+python:
+  - 3.5
+
+env:
+  global
+    - FABRIC_VERSION=1.5
+    - FABRIC_VERSION=1.8
+    - secure: "QIuTjPHCCLDqhrjwJtZLdtQKkmwCXKXT9LC0zCr1yfWK+DpLfpFB/LkD9ca+\nZ0bsZ9NM0X4t+R5hAEBTRcIOoVEtutOb4MOlYK5j1uHsNVjDC9nB1+OTqEyK\nURlw2AQTzFNs++LQnfXe8QAd9VLu+wJ5NAjH0tX28Xje95humuE="
+
+before_install:
+  - sudo apt-get install libevent-dev
+  - pip install --use-mirrors gevent nose redis testtools
+
+install:
+  - pip install -r requirements.txt --use-mirrors
+
+script:
+  - start.sh
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
