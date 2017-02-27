@@ -13,11 +13,11 @@ except:
     long_description = None
 
 setup(
-    name='phasewalk',
+    name='bta',
     version=".".join(str(x) for x in __version__),
-    description='ZZiZiLY phasewalk Project',
+    description='ZZiZiLY bta Project',
     long_description=long_description,
-    url='https://github.com/deuxksy/phasewalk',
+    url='https://github.com/deuxksy/bta',
     author='SeokYoung Kim',
     author_email='crom@zzizily.com',
     license=license,
@@ -39,7 +39,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.5',
     ],
-    keywords='zzizily phasewalk api',
+    keywords='zzizily bta api',
     # my_module.py 만 배포하려면
     # py_modules = [ 'my_module'],
     packages=find_packages(),
@@ -47,19 +47,14 @@ setup(
         'cryptography',
         'redis',
         'requests',
-        'selenium',
         'pip-review',
     ],
     # package 필요한 데이터 파일 Python 2.6 이하를 사용한다면 MANIFEST.in 포함 해야합니다.
     package_data={
-        'phasewalk': [
+        'bta': [
             'resources/local_config.ini',
             'resources/dev_config.ini',
             'resources/prod_config.ini',
-            'resources/chromedriver/2.27/chromedriver.exe',
-            'resources/geckodriver/geckodriver.exe',
-            'resources/phantomjs/2.1.1/phantomjs.exe',
-            'resources/phantomjs/2.1.1/phantomjs',
         ],
     },
     # 'package_data'가 선호되는 접근 방식이지만 어떤 경우에는 데이터 파일을 패키지 외부에 배치해야합니다.
