@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
 from os import path
 
 from setuptools import find_packages
 from setuptools import setup
+
+"""
+Python 2 에서도 동작이 가능 하도록 만들어야함
+"""
 
 __version__ = (0, 0, 1)
 here = path.abspath(path.dirname(__file__))

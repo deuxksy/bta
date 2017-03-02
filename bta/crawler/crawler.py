@@ -1,18 +1,10 @@
-import logging
-import os
-
 import requests
-from kiki.commons import log
 from kiki.commons import proxy
 from kiki.commons.util import web
 from requests.exceptions import ProxyError
 
-from bta.config import config
 
-logger = log.get_logger(logger=logging.getLogger(os.path.basename(__file__).split('.')[0]), config=config)
-
-
-class HumbleBundleCrawler(object):
+class BaseCrawler(object):
     def __init__(self, key):
         self.key = key
         self.encoding = 'utf-8'

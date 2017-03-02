@@ -1,3 +1,3 @@
-# phasewalk
+# bta
 ##설명
-무료 Proxy 주소 수집하기 
+game bundle 가격 수집 하기
