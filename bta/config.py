@@ -1,3 +1,4 @@
+# !/usr/bin/env python
 #-*- coding: utf-8 -*-
 config = {
     "code": {
@@ -8,18 +9,18 @@ config = {
     "db": {
         "redis_db_bta": 1,
         "redis_db_common": 0,
-        "redis_host": "gAAAAABYuEUdvRKvSL8P8LANdYsHkNPsN1VBL1P-jBD7XAf6Sr_Pd30pU-3jKJ4G9ue8Ywh6J3HmaUUx2ur-CWzKGx_jG_lcrMNLqM4ohHz498XAdQI_0vM=",
-        "redis_password": "gAAAAABYuEUdHONVc2t3M1HV2Zm4ZYnwIhaHJlwbPINVxVu1zPda5QxH7AJSCFf6ZUljg6NFH1FQiUg65hU-XUHVURl8_6tBKg==",
-        "redis_port": "gAAAAABYuEUdMrgDPkKbscjEgstJBchHnQHXAerbw_f4ZHGfXIydZ4YRAYAjv4rubG7NeQ3TfGaB_SRtau-sNUPEHonfzjnb-A=="
+        "redis_host": "gAAAAABYyZqP4vy26CEJ881NKCQ8NJ0rw4gPhI41Krn7tsEPNnGgrNRAn1uRm8XqaRThg3MIZStl-XnAApScBgCo2XlPQdZoB_ugBQmqKmq5zmQGJmOzDpQ=",
+        "redis_password": "gAAAAABYyZqPP8zshWrK-p8E28hAG910Zuw1cRMR4gfDS3AWgjISrL3ChmUEn-vCO9vpcMxgyjZm5x9WJ5eoUUyH5xNtcFL-6g==",
+        "redis_port": "gAAAAABYyZqP0wTOKyRV8ikIlnb7oauUEOlaxjEmXbEdGmAg9EcADH91jhnhNeKXK_Swdy125pDZ_TkGmtMuKqYazvcpHeInkQ=="
     },
     "default": {
-        "mode": "prod"
+        "mode": "local"
     },
     "log": {
         "encoding": "utf-8",
         "file_size": 128,
         "formatter": "[%(levelname)s|%(filename)s:%(lineno)s] %(asctime)s > %(message)s",
-        "path": "/home/pi/bta/logs",
+        "path": "D:/DK/Version/Git/ZZiZiLY/Python/bta/logs",
         "prefix": "%Y/%m/%d",
         "suffix": "%H%M%S"
     }
