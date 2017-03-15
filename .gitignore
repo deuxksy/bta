@@ -6,6 +6,7 @@
 /logs/
 __pycache__
 *.py[cd]
+/env
 /config/config.*.py
 /config/make_config.*
 /bta/resources/gen_config.py
