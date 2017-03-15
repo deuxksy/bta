@@ -12,11 +12,11 @@ class BaseCrawler(object):
     count = {}
     urls = []
     headers = {'User-Agent': web.get_user_agent()}
-    site = ''
+    site_key = ''
     proxies = {}
 
     def __init__(self, *args, **kwargs):
-        self.site = kwargs.get('site')
+        self.site_key = kwargs.get('site_key')
         self.proxies = proxy.get_proxies()
 
     def get_response(self, url, max=2):
