@@ -13,4 +13,4 @@ import pip
 #         print(traceback.format_exc())
 
 call('pip-review')
-call('pip-update.cmd')
+# call('pip-update.cmd')
