@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import json
 
 class BtaBaseObject(object):
@@ -34,8 +37,11 @@ class BtaPrice(BtaBaseObject):
     bta_deal = None
     url = None
     title = None
+    # 전체 구매 금액
     total = None
+    # 전체 구매 건수
     purchases = None
+    # 평균 구매 금액
     average = None
 
 class BtaArchive(BtaBaseObject):
