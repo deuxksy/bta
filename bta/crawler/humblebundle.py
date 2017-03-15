@@ -1,83 +1,50 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import logging
 import os
 import time
 import traceback
 
 import redis
-import requests
 import scrapy
 from kiki.commons import log
-from kiki.commons import proxy
-from kiki.commons.util import web
-from requests.exceptions import ProxyError
 
 from bta.config import config
+from bta.crawler import BaseCrawler
+from bta.models import BtaDeal
 from bta.models import BtaPrice
 from bta.settings import redis_pool_bta
 
 logger = log.get_logger(logger=logging.getLogger(os.path.basename(__file__).split('.')[0]), config=config)
 
 
-class HumbleBundleCrawler(object):
-    def __init__(self, key):
-        self.key = key
-        self.encoding = 'utf-8'
-        self.urls = []
-        # threading.Thread.__init__(self)
+class HumbleBundle(BaseCrawler):
+    # redis bta db1 접속
+    r = redis.Redis(connection_pool=redis_pool_bta)
+
+    def __init__(self, *args, **kwargs):
+        super(HumbleBundle, self).__init__(*args, **kwargs)
         self.init()
 
     def init(self):
-        self.headers = {'User-Agent': web.get_user_agent()}
-        self.redis = redis.Redis(connection_pool=redis_pool_bta)
-        self.site = self.redis.hscan('bta_site:{}'.format(self.key))[1]
+        print ('bta_site:{site}'.format(site=self.site))
+        self.site = self.r.hscan('bta_site:{site}'.format(site=self.site))[1]
         self.url = self.site.get(b'url').decode(self.encoding)
-        self.proxies = proxy.get_proxies()
-        self.count = {}
 
-    def get_response(self, url, max=2):
-        """Sends a GET request.
-
-        :param url:
-        :param max: (optional)
-        :return: :class:`Response <Response>` object
-        :rtype: requests.Response
-        """
-        response = None
-
-        # url 별 재시도 회수를 저장 하지 위한 count 값
-        if url not in self.count:
-            self.count[url] = 0
-
-        # max(2) 보다 크면 proxy 를 사용하지 않고 그냥 가지고 오기
-        if max < self.count[url]:
-            # url count 삭제
-            self.count.pop(url)
-            return requests.get(url=url, headers=self.headers)
-
-        try:
-            response = requests.get(url=url, headers=self.headers, proxies=self.proxies)
-        except ProxyError:
-            response = requests.get(url=url, headers=self.headers, proxies=self.proxies)
-        finally:
-            if response is None:
-                self.count[url] += 1
-                self.proxies = proxy.get_proxies()
-                return self.get_response(url)
-            else:
-                return response
-
-    def init_parse(self):
+    def check_price(self):
         response = self.get_response(url=self.url)
         if response is not None:
             html = scrapy.Selector(text=response.text)
             categories = html.xpath(self.site.get(b'xpath_category').decode(self.encoding)).extract()[0:-2]
             for category in categories:
                 try:
-                    self.parse(self.url + category)
+                    self.parse_price(self.url + category)
                 except Exception:
                     logger.error(traceback.format_exc())
 
-    def parse(self, url):
+    def parse_price(self, url):
+        logger.debug(url)
         if url not in self.urls:
             response = self.get_response(url=url)
             if response is None:
@@ -87,7 +54,6 @@ class HumbleBundleCrawler(object):
 
             bta_price = BtaPrice()
             bta_price.url = html.xpath(self.site.get(b'xpath_url').decode(self.encoding)).extract().pop()
-            logger.debug(bta_price.url)
             bta_price.title = html.xpath(self.site.get(b'xpath_title').decode(self.encoding)).extract().pop()
             bta_price.total = html.xpath(self.site.get(b'xpath_total').decode(self.encoding)).re(
                 self.site.get(b're_number').decode(self.encoding)).pop().replace(',', '')
@@ -95,28 +61,58 @@ class HumbleBundleCrawler(object):
                 self.site.get(b're_number').decode(self.encoding)).pop().replace(',', '')
             bta_price.average = html.xpath(self.site.get(b'xpath_average').decode(self.encoding)).re(
                 self.site.get(b're_number').decode(self.encoding)).pop().replace(',', '')
-            bta_price.time = int(time.time())
+            bta_price.time_new = int(time.time())
+            bta_price.time_update = int(bta_price.time_new)
 
-            html.xpath(self.site.get(b'xpath_start_end').decode(self.encoding)).re(
+            start_end = html.xpath(self.site.get(b'xpath_start_end').decode(self.encoding)).re(
                 self.site.get(b're_start_end').decode(self.encoding))  # 시작 종료 timestamp
             self.urls.append(bta_price.url)
-            self.save(bta_price)
+
+            bta_deal = BtaDeal()
+            bta_deal.bta_site = self.site
+            bta_deal.url = bta_price.url
+            bta_deal.title = bta_price.title
+            bta_deal.start = int(start_end[0])
+            bta_deal.end = int(start_end[1])
+
+            self.save_price(bta_price)
+            self.merge_deal(bta_deal)
+
             next_page = html.xpath(self.site.get(b'xpath_next_page').decode(self.encoding)).extract_first()
             if (next_page):
-                self.parse(self.url + next_page)
+                self.parse_price(self.url + next_page)
 
-    def save(self, bta_price):
+    def save_price(self, bta_price):
         url = bta_price.url
         if url and url.split('//'):
             key_split = url.split('//')[-1].split('/')
             if 2 == len(key_split):
-                key = ':top:'.join(key_split)
+                price_key = ':top:'.join(key_split)
             else:
-                key = ':'.join(key_split)
+                price_key = ':'.join(key_split)
         else:
-            key = url
-        logger.debug(bta_price.toJSON())
-        self.redis.lpush('bta_price:{}'.format(key), bta_price.toJSON())
+            price_key = url
+        # logger.debug(bta_price.to_json())
+        self.r.lpush('bta_price:{price_key}'.format(price_key=price_key), bta_price.to_json())
+
+    def merge_deal(self, bta_deal):
+        bta_deal_key = 'bta_deal:{site}:{deal}'.format(site=self.site, deal=bta_deal.url.split('/')[-1])
+        checkpoint = self.r.hlen(name=bta_deal_key)
+        print(bta_deal_key, checkpoint)
+        if checkpoint:
+            bta_deal_dict = self.r.hscan(name=bta_deal_key)[1]
+            for property in bta_deal_dict:
+                key = property.decode()
+                if 'time_' not in key:
+                    if bta_deal.__dict__.get(key) != bta_deal_dict.get(property):
+                        self.r.hset(name=bta_deal_key, key=key, value=bta_deal.__dict__.get(key))
+                        self.r.hset(name=bta_deal_key, key='time_update', value=time.time())
+        else:
+            bta_deal_dict = bta_deal.__dict__
+            self.r.hset(name=bta_deal_key, key='time_new', value=time.time())
+            for property in bta_deal_dict:
+                self.r.hset(name=bta_deal_key, key=property, value=bta_deal_dict.get(property))
+            self.r.hset(name=bta_deal_key, key='time_update', value=time.time())
 
     def run(self):
-        self.init_parse()
+        self.check_price()
