@@ -27,7 +27,7 @@ class HumbleBundle(BaseCrawler):
         super(HumbleBundle, self).__init__(*args, **kwargs)
         self.init(args, kwargs)
 
-    def init(self,args, kwargs):
+    def init(self, args, kwargs):
         # logger.debug('bta_site:{site}'.format(site=self.site_key))
         self.r_bta_site = self.r.hscan('bta_site:{site}'.format(site=self.site_key))[1]
         self.url = self.r_bta_site.get(b'url').decode(self.encoding)
@@ -55,12 +55,12 @@ class HumbleBundle(BaseCrawler):
             bta_price = BtaPrice()
             bta_price.url = html.xpath(self.r_bta_site.get(b'xpath_url').decode(self.encoding)).extract().pop()
             bta_price.title = html.xpath(self.r_bta_site.get(b'xpath_title').decode(self.encoding)).extract().pop()
-            bta_price.total = html.xpath(self.r_bta_site.get(b'xpath_total').decode(self.encoding)).re(
-                self.r_bta_site.get(b're_number').decode(self.encoding)).pop().replace(',', '')
-            bta_price.purchases = html.xpath(self.r_bta_site.get(b'xpath_purchases').decode(self.encoding)).re(
-                self.r_bta_site.get(b're_number').decode(self.encoding)).pop().replace(',', '')
-            bta_price.average = html.xpath(self.r_bta_site.get(b'xpath_average').decode(self.encoding)).re(
-                self.r_bta_site.get(b're_number').decode(self.encoding)).pop().replace(',', '')
+            bta_price.total = float(html.xpath(self.r_bta_site.get(b'xpath_total').decode(self.encoding)).re(
+                self.r_bta_site.get(b're_number').decode(self.encoding)).pop().replace(',', ''))
+            bta_price.purchases = int(html.xpath(self.r_bta_site.get(b'xpath_purchases').decode(self.encoding)).re(
+                self.r_bta_site.get(b're_number').decode(self.encoding)).pop().replace(',', ''))
+            bta_price.average = float(html.xpath(self.r_bta_site.get(b'xpath_average').decode(self.encoding)).re(
+                self.r_bta_site.get(b're_number').decode(self.encoding)).pop().replace(',', ''))
             bta_price.time_new = int(time.time())
             bta_price.time_update = int(bta_price.time_new)
 
@@ -112,13 +112,16 @@ class HumbleBundle(BaseCrawler):
                     if bta_deal.__dict__.get(key) != bta_deal_dict.get(property).decode():
                         self.r.hset(name=bta_deal_key, key=key, value=bta_deal.__dict__.get(key))
                         checkpoint_time_update = True
-                        logger.debug('BtaDeal_update > {bta_deal_key}/{key}:{value}'.format(bta_deal_key=bta_deal_key,key=key,value=bta_deal.__dict__.get(key)))
+                        logger.debug(
+                            'BtaDeal_update > {bta_deal_key}/{key}:{value}'.format(bta_deal_key=bta_deal_key, key=key,
+                                                                                   value=bta_deal.__dict__.get(key)))
             if checkpoint_time_update:
                 self.r.hset(name=bta_deal_key, key='time_update', value=int(time.time()))
         # hlen 0  이하 일때는 데이터 없음 insert
         else:
             bta_deal_dict = bta_deal.__dict__
-            logger.debug('BtaDeal_insert > {bta_deal_key}/{values}'.format(bta_deal_key=bta_deal_key,values=bta_deal_dict))
+            logger.debug(
+                'BtaDeal_insert > {bta_deal_key}/{values}'.format(bta_deal_key=bta_deal_key, values=bta_deal_dict))
             self.r.hset(name=bta_deal_key, key='time_new', value=int(time.time()))
             for property in bta_deal_dict:
                 self.r.hset(name=bta_deal_key, key=property, value=bta_deal_dict.get(property).decode())
