@@ -7,6 +7,6 @@
 __pycache__
 *.py[cd]
 /config/config.*.py
-/config/make_config.py
+/config/make_config.*
 /bta/resources/gen_config.py
 /sh.exe.stackdump
