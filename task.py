@@ -1,4 +1,4 @@
-from bta.crawler.humblebundle import HumbleBundleCrawler
+from bta.crawler.humblebundle import HumbleBundle
 
 if __name__ == '__main__':
-    HumbleBundleCrawler('www.humblebundle.com').run()
+    HumbleBundle(site='www.humblebundle.com').run()
