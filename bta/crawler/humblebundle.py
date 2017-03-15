@@ -28,7 +28,7 @@ class HumbleBundle(BaseCrawler):
         self.init()
 
     def init(self):
-        print ('bta_site:{site}'.format(site=self.site))
+        logger.debug('bta_site:{site}'.format(site=self.site))
         self.site = self.r.hscan('bta_site:{site}'.format(site=self.site))[1]
         self.url = self.site.get(b'url').decode(self.encoding)
 
@@ -98,7 +98,7 @@ class HumbleBundle(BaseCrawler):
     def merge_deal(self, bta_deal):
         bta_deal_key = 'bta_deal:{site}:{deal}'.format(site=self.site, deal=bta_deal.url.split('/')[-1])
         checkpoint = self.r.hlen(name=bta_deal_key)
-        print(bta_deal_key, checkpoint)
+        # logger.debug('{bta_deal_key}-{checkpoint}'.format(bta_deal_key, checkpoint))
         if checkpoint:
             bta_deal_dict = self.r.hscan(name=bta_deal_key)[1]
             for property in bta_deal_dict:
